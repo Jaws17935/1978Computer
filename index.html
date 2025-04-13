@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>損益計算機 - 賽博龐克風格</title>
+  <title>損益計算機</title>
   <style>
     body {
       margin: 0;
@@ -13,9 +13,10 @@
       font-family: 'Arial', sans-serif;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
       min-height: 100vh;
-      overflow: hidden;
+      overflow: auto;
+      position: relative;
     }
 
     .dashboard {
@@ -25,13 +26,10 @@
       backdrop-filter: blur(10px);
       box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
       width: 450px;
-      max-height: 90vh;
-      overflow-y: auto;
-      overflow-x: hidden;
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-      margin-top: 20px;
+      margin: 20px;
     }
 
     .input-section {
@@ -45,7 +43,7 @@
     .card {
       background: rgba(0, 0, 0, 0.5);
       border-radius: 10px;
-      padding: 20px;
+      padding: 12px;
       box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
       text-align: center;
       width: 100%;
@@ -53,17 +51,17 @@
     }
 
     .card h1 {
-      margin: 0 0 20px;
-      font-size: 2em;
+      margin: 0 0 12px;
+      font-size: 1.8em;
       color: #00ffcc;
       text-shadow: 0 0 5px rgba(0, 255, 204, 0.7);
     }
 
     .card label {
       display: block;
-      margin: 10px auto 5px;
+      margin: 6px auto 3px;
       color: #00ffcc;
-      font-size: 1.1em;
+      font-size: 1em;
       font-weight: bold;
       width: fit-content;
     }
@@ -71,12 +69,12 @@
     .card input[type="text"] {
       width: 80%;
       max-width: 300px;
-      padding: 8px;
+      padding: 6px;
       background: rgba(0, 255, 204, 0.1);
       border: 1px solid #00ffcc;
       border-radius: 5px;
       color: #ffffff;
-      font-size: 1em;
+      font-size: 0.9em;
       display: block;
       margin: 0 auto;
       text-align: center;
@@ -89,17 +87,17 @@
     }
 
     .radio-group {
-      margin: 8px auto;
+      margin: 4px auto;
       display: flex;
       justify-content: center;
-      gap: 15px;
+      gap: 12px;
       width: fit-content;
     }
 
     .radio-group label {
       display: inline;
       margin: 0;
-      font-size: 1em;
+      font-size: 0.9em;
       font-weight: normal;
     }
 
@@ -128,8 +126,8 @@
     }
 
     .result {
-      margin-top: 15px;
-      padding: 8px;
+      margin-top: 10px;
+      padding: 5px;
       background: rgba(0, 0, 0, 0.7);
       border-radius: 6px;
       border: 1px solid #00ffcc;
@@ -146,27 +144,85 @@
     }
 
     .result p {
-      margin: 3px 0;
-      font-size: 1em;
+      margin: 2px 0;
+      font-size: 0.9em;
       color: #ffffff;
       width: 100%;
       text-align: center;
     }
 
     .background {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       z-index: -1;
-      background: radial-gradient(circle, rgba(15, 12, 41, 0.8), rgba(48, 43, 99, 0.8));
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
       animation: pulse 5s infinite alternate;
     }
 
     @keyframes pulse {
       0% { opacity: 0.8; }
       100% { opacity: 1; }
+    }
+
+    .weight-input-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 80%;
+      max-width: 300px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .weight-input-group input[type="text"] {
+      width: 100%;
+      padding: 6px 50px 6px 6px;
+      background: rgba(0, 255, 204, 0.1);
+      border: 1px solid #00ffcc;
+      border-radius: 5px;
+      color: #ffffff;
+      font-size: 0.9em;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .weight-unit-select {
+      position: absolute;
+      right: 1px;
+      top: 1px;
+      bottom: 1px;
+      width: 45px;
+      padding: 6px;
+      background: rgba(0, 255, 204, 0.1);
+      border: none;
+      border-left: 1px solid #00ffcc;
+      border-radius: 0 5px 5px 0;
+      color: #ffffff;
+      font-size: 0.9em;
+      text-align: center;
+      box-sizing: border-box;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: none;
+    }
+
+    .weight-unit-select:focus {
+      outline: none;
+    }
+
+    .weight-input-group input[type="text"]:focus {
+      outline: none;
+      box-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
+    }
+
+    .weight-unit-select option {
+      background: #0f0c29;
+      color: #00ffcc;
     }
   </style>
 </head>
@@ -177,34 +233,8 @@
       <div class="input-section">
         <h1>損益計算機</h1>
 
-        <!-- 是否已知成本 -->
-        <label>是否已知成本</label>
-        <div class="radio-group">
-          <label><input type="radio" name="known_cost" id="known_cost_y" value="Y" tabindex="0"> Y</label>
-          <label><input type="radio" name="known_cost" id="known_cost_n" value="N" tabindex="0"> N</label>
-        </div>
-        <span id="known_cost_error" class="error-message"></span>
-
-        <!-- 已知成本 (Y) -->
-        <div id="section_known" class="hidden">
-          <label for="single_cost">單一成本 (元)</label>
-          <input type="text" id="single_cost" value="0">
-          <span id="single_cost_error" class="error-message"></span>
-          <span id="single_cost_formula_error" class="formula-error"></span>
-          
-          <label for="platform_commission_rate_y">抽成</label>
-          <input type="text" id="platform_commission_rate_y" value="21.5">
-          <span id="platform_commission_rate_y_error" class="error-message"></span>
-          <span id="platform_commission_rate_y_formula_error" class="formula-error"></span>
-          
-          <label for="profit_margin_rate_y">實際利潤</label>
-          <input type="text" id="profit_margin_rate_y" value="0">
-          <span id="profit_margin_rate_y_error" class="error-message"></span>
-          <span id="profit_margin_rate_y_formula_error" class="formula-error"></span>
-        </div>
-
         <!-- 未知成本 (N) -->
-        <div id="section_unknown" class="hidden">
+        <div id="section_unknown">
           <!-- 單價 / 總價 -->
           <div class="radio-group">
             <label><input type="radio" name="price_mode" id="price_mode_unit" value="unit" checked tabindex="0"> 單價</label>
@@ -222,13 +252,23 @@
           
           <!-- 需郵費 / 無郵費 -->
           <div class="radio-group">
-            <label><input type="radio" name="shipping_included" id="shipping_included_yes" value="Y" checked tabindex="0"> 需郵費</label>
-            <label><input type="radio" name="shipping_included" id="shipping_included_no" value="N" tabindex="0"> 無郵費</label>
+            <label><input type="radio" name="shipping_included" id="shipping_included_no" value="N" checked tabindex="0"> 無郵費</label>
+            <label><input type="radio" name="shipping_included" id="shipping_included_yes" value="Y" tabindex="0"> 需郵費</label>
           </div>
           <span id="shipping_included_error" class="error-message"></span>
           <input type="text" id="inland_shipping" value="0">
           <span id="inland_shipping_error" class="error-message"></span>
           <span id="inland_shipping_formula_error" class="formula-error"></span>
+          
+          <!-- 修改：商品材數選項 -->
+          <div class="radio-group">
+            <label><input type="radio" name="material_mode" id="material_mode_normal" value="normal" checked tabindex="0"> 未超材</label>
+            <label><input type="radio" name="material_mode" id="material_mode_extra" value="extra" tabindex="0"> 計超材</label>
+          </div>
+          <span id="material_mode_error" class="error-message"></span>
+          <input type="text" id="material_count" value="7" disabled>
+          <span id="material_count_error" class="error-message"></span>
+          <span id="material_count_formula_error" class="formula-error"></span>
           
           <!-- 重量 (單重 / 總重) -->
           <div class="radio-group">
@@ -238,15 +278,15 @@
           <span id="weight_mode_error" class="error-message"></span>
 
           <!-- 重量輸入框 -->
-          <input type="text" id="weight_value" value="1">
+          <div class="weight-input-group">
+            <input type="text" id="weight_value" value="1">
+            <select id="weight_unit" class="weight-unit-select">
+              <option value="g">G</option>
+              <option value="kg" selected>KG</option>
+            </select>
+          </div>
           <span id="weight_value_error" class="error-message"></span>
           <span id="weight_value_formula_error" class="formula-error"></span>
-
-          <!-- G / KG 選項 -->
-          <div class="radio-group">
-            <label><input type="radio" name="weight_unit" id="weight_unit_g" value="g" tabindex="0"> G</label>
-            <label><input type="radio" name="weight_unit" id="weight_unit_kg" value="kg" checked tabindex="0"> KG</label>
-          </div>
 
           <label for="exchange_rate">採購匯率</label>
           <input type="text" id="exchange_rate" value="4.5">
@@ -276,8 +316,9 @@
         <p id="result_total_weight"></p> <!-- 總重顯示位置 -->
         <p id="result_single_cost"></p>
         <p id="result_total_cost"></p>
-        <p>建議定價: <span id="suggested_pricing"></span></p>
-        <p>定價損益: <span id="suggested_profit_loss"></span></p>
+        <p id="result_extra_material_fee"></p> <!-- 新增：超材計價顯示 -->
+        <p>建議定價：<span id="suggested_pricing"></span></p>
+        <p>定價損益：<span id="suggested_profit_loss"></span></p>
       </div>
     </div>
   </div>
@@ -285,16 +326,12 @@
   <script>
     // 快速取得常用元素
     const $ = id => document.getElementById(id);
-    const knownCostY = $('known_cost_y'),
-          knownCostN = $('known_cost_n'),
-          sectionKnown = $('section_known'),
-          sectionUnknown = $('section_unknown'),
+    const sectionUnknown = $('section_unknown'),
           priceModeUnit = $('price_mode_unit'),
           shippingIncludedYes = $('shipping_included_yes'),
           weightModeSingle = $('weight_mode_single'),
           weightModeTotal = $('weight_mode_total'),
-          weightUnitKg = $('weight_unit_kg'),
-          weightUnitG = $('weight_unit_g'),
+          weightUnitSelect = $('weight_unit'),
           inlandShippingField = $('inland_shipping'),
           resultArea = $('result_area');
 
@@ -317,16 +354,7 @@
 
     // 初始事件設定
     window.addEventListener('DOMContentLoaded', () => {
-      [knownCostY, knownCostN].forEach(radio => {
-        radio.addEventListener('change', () => {
-          toggleSections();
-          calculate();
-          attachEnterKeyListeners();
-          (knownCostY.checked ? $('single_cost') : $('price_mode_unit')).focus();
-        });
-      });
-
-      // 其餘改變事件: 價格模式 / 郵費 / 重量模式 / 重量單位
+      // 其餘改變事件: 價格模式 / 郵費 / 重量模式 / 重量單位 / 材數模式
       [
         priceModeUnit,
         $('price_mode_total'),
@@ -334,12 +362,15 @@
         $('shipping_included_no'),
         weightModeSingle,
         weightModeTotal,
-        weightUnitKg,
-        weightUnitG
+        weightUnitSelect,
+        $('material_mode_normal'),
+        $('material_mode_extra')
       ].forEach(el =>
         el.addEventListener('change', () => {
           if (el === shippingIncludedYes || el === $('shipping_included_no')) {
             handleShippingMode();
+          } else if (el === $('material_mode_normal') || el === $('material_mode_extra')) {
+            handleMaterialMode();
           } else {
             calculate();
           }
@@ -347,30 +378,35 @@
       );
 
       handleShippingMode();
-      toggleSections();
+      handleMaterialMode();
       calculate();
       attachEnterKeyListeners();
     });
 
-    // 切換成本區塊顯示
-    const toggleSections = () => {
-      $('known_cost_error').innerText = '';
-      if (knownCostY.checked) {
-        sectionKnown.classList.remove('hidden');
-        sectionUnknown.classList.add('hidden');
-      } else if (knownCostN.checked) {
-        sectionKnown.classList.add('hidden');
-        sectionUnknown.classList.remove('hidden');
-      }
-    };
-
     // 依是否需郵費切換內地運費欄位
     const handleShippingMode = () => {
       if (shippingIncludedYes.checked) {
+        inlandShippingField.style.display = 'block';
         inlandShippingField.disabled = false;
       } else {
+        inlandShippingField.style.display = 'none';
         inlandShippingField.value = '0';
         inlandShippingField.disabled = true;
+      }
+      calculate();
+    };
+
+    // 依材數模式切換材數輸入框
+    const handleMaterialMode = () => {
+      const materialCountField = $('material_count');
+      if ($('material_mode_extra').checked) {
+        materialCountField.style.display = 'block';
+        materialCountField.disabled = false;
+        materialCountField.value = '7'; // 預設值設為7
+      } else {
+        materialCountField.style.display = 'none';
+        materialCountField.value = '6';
+        materialCountField.disabled = true;
       }
       calculate();
     };
@@ -438,41 +474,31 @@
 
     // 動態建立跳欄順序
     const getFlowOrder = () => {
-      if (knownCostY.checked) {
-        return [
-          knownCostY,
-          $('single_cost'),
-          $('platform_commission_rate_y'),
-          $('profit_margin_rate_y')
-        ];
-      } else if (knownCostN.checked) {
-        let flow = [
-          knownCostN,
-          priceModeUnit,
-          $('price_mode_total'),
-          $('product_price'),
-          $('purchase_quantity'),
-          shippingIncludedYes,
-          $('shipping_included_no')
-        ];
-        if (shippingIncludedYes.checked) {
-          flow.push(inlandShippingField);
-        }
-        // weight_mode + weight_unit + weight_value
-        flow.push(
-          weightModeSingle,
-          weightModeTotal,
-          $('weight_value'),
-          weightUnitG,
-          weightUnitKg,
-          $('exchange_rate'),
-          $('international_shipping'),
-          $('platform_commission_rate_n'),
-          $('profit_margin_rate_n')
-        );
-        return flow;
+      let flow = [
+        priceModeUnit,
+        $('price_mode_total'),
+        $('product_price'),
+        $('purchase_quantity'),
+        shippingIncludedYes,
+        $('shipping_included_no')
+      ];
+      if (shippingIncludedYes.checked) {
+        flow.push(inlandShippingField);
       }
-      return [];
+      // 加入材數選項
+      flow.push($('material_mode_normal'), $('material_mode_extra'));
+      // weight_mode + weight_unit + weight_value
+      flow.push(
+        weightModeSingle,
+        weightModeTotal,
+        $('weight_value'),
+        weightUnitSelect,
+        $('exchange_rate'),
+        $('international_shipping'),
+        $('platform_commission_rate_n'),
+        $('profit_margin_rate_n')
+      );
+      return flow;
     };
 
     // 核心計算
@@ -487,83 +513,79 @@
       
       resultArea.style.display = 'none';
 
-      if (!knownCostY.checked && !knownCostN.checked) {
-        $('known_cost_error').innerText = '';
-        return;
-      }
-
       let pCommission = 0,
           pProfit = 0,
           singleCost = 0;
 
-      // 先清空「總重」欄位，避免已知成本時殘留舊資料
+      // 先清空「總重」欄位
       $('result_total_weight').innerText = '';
 
-      // ------ 已知成本 (Y) ------
-      if (knownCostY.checked) {
-        singleCost = getValidFloat('single_cost', 0, true);
-        pCommission = getValidFloat('platform_commission_rate_y', 0, true);
-        pProfit = getValidFloat('profit_margin_rate_y', 0, true);
+      const productPriceVal = getValidFloat('product_price', 0, true),
+            purchaseQuantityVal = getValidFloat('purchase_quantity', 0.0001, true),
+            exchangeRateVal = getValidFloat('exchange_rate', 0.0001, true),
+            internationalShippingVal = getValidFloat('international_shipping', 0, true);
 
-        if (singleCost === null || pCommission === null || pProfit === null) return;
+      pCommission = getValidFloat('platform_commission_rate_n', 0, true);
+      pProfit = getValidFloat('profit_margin_rate_n', 0, true);
 
-        $('result_single_cost').innerText = `單成：${singleCost.toFixed(2)} 元`;
-        $('result_single_weight').innerText = '';
-        $('result_total_cost').innerText = '';
+      if ([productPriceVal, purchaseQuantityVal, exchangeRateVal, internationalShippingVal, pCommission, pProfit].some(v => v === null)) return;
+
+      const inlandShippingVal = shippingIncludedYes.checked ? getValidFloat('inland_shipping', 0, true) : 0;
+      if (shippingIncludedYes.checked && inlandShippingVal === null) return;
+
+      const totalProductCost = priceModeUnit.checked
+        ? productPriceVal * purchaseQuantityVal
+        : productPriceVal;
+
+      // 先取 rawWeightVal
+      const rawWeightVal = getValidFloat('weight_value', 0, true);
+      if (rawWeightVal === null) return;
+
+      // 判斷現在是 "g" or "kg" -> 轉成 kg
+      const weightUnitFactor = weightUnitSelect.value === 'kg' ? 1 : 0.001;
+      const rawWeightValInKg = rawWeightVal * weightUnitFactor;
+
+      // 若是「單重」需 * 數量，若「總重」則不再乘以數量
+      const finalWeightVal = weightModeSingle.checked
+        ? rawWeightValInKg * purchaseQuantityVal
+        : rawWeightValInKg;
+
+      // （商品 + 內地運費）* 匯率
+      const costAfterExchange = (totalProductCost + inlandShippingVal) * exchangeRateVal;
+
+      // 計算材數額外運費
+      let extraShippingFee = 0;
+      if ($('material_mode_extra').checked) {
+        const materialCountVal = getValidFloat('material_count', 7, true);
+        if (materialCountVal === null) return;
+        if (materialCountVal > 6) {
+          extraShippingFee = Math.floor(materialCountVal - 6) * 25;
+          $('result_extra_material_fee').innerText = `超材計價：${extraShippingFee.toFixed(2)} 元`;
+        } else {
+          $('result_extra_material_fee').innerText = '';
+        }
+      } else {
+        $('result_extra_material_fee').innerText = '';
       }
-      // ------ 未知成本 (N) ------
-      else {
-        const productPriceVal = getValidFloat('product_price', 0, true),
-              purchaseQuantityVal = getValidFloat('purchase_quantity', 0.0001, true),
-              exchangeRateVal = getValidFloat('exchange_rate', 0.0001, true),
-              internationalShippingVal = getValidFloat('international_shipping', 0, true);
-        pCommission = getValidFloat('platform_commission_rate_n', 0, true);
-        pProfit = getValidFloat('profit_margin_rate_n', 0, true);
 
-        if ([productPriceVal, purchaseQuantityVal, exchangeRateVal, internationalShippingVal, pCommission, pProfit].some(v => v === null)) return;
+      // 國際運費：finalWeightVal (kg) * internationalShippingVal (單位：NT$/kg) + 超材運費
+      const internationalShippingTotal = (finalWeightVal * internationalShippingVal) + extraShippingFee;
 
-        const inlandShippingVal = shippingIncludedYes.checked ? getValidFloat('inland_shipping', 0, true) : 0;
-        if (shippingIncludedYes.checked && inlandShippingVal === null) return;
+      // 總成本
+      const totalCost = costAfterExchange + internationalShippingTotal;
 
-        const totalProductCost = priceModeUnit.checked
-          ? productPriceVal * purchaseQuantityVal
-          : productPriceVal;
+      // 單成
+      singleCost = totalCost / purchaseQuantityVal;
 
-        // 先取 rawWeightVal
-        const rawWeightVal = getValidFloat('weight_value', 0, true);
-        if (rawWeightVal === null) return;
+      // 單重
+      const singleWeight = finalWeightVal / purchaseQuantityVal;
+      $('result_single_weight').innerText = `單重：${singleWeight.toFixed(2)} Kg`;
 
-        // 判斷現在是 "g" or "kg" -> 轉成 kg
-        const weightUnitFactor = weightUnitKg.checked ? 1 : 0.001;
-        const rawWeightValInKg = rawWeightVal * weightUnitFactor;
+      // 顯示總重
+      $('result_total_weight').innerText = `總重：${finalWeightVal.toFixed(2)} Kg`;
 
-        // 若是「單重」需 * 數量，若「總重」則不再乘以數量
-        const finalWeightVal = weightModeSingle.checked
-          ? rawWeightValInKg * purchaseQuantityVal
-          : rawWeightValInKg;
-
-        // （商品 + 內地運費）* 匯率
-        const costAfterExchange = (totalProductCost + inlandShippingVal) * exchangeRateVal;
-
-        // 國際運費：finalWeightVal (kg) * internationalShippingVal (單位：NT$/kg)
-        const internationalShippingTotal = finalWeightVal * internationalShippingVal;
-
-        // 總成本
-        const totalCost = costAfterExchange + internationalShippingTotal;
-
-        // 單成
-        singleCost = totalCost / purchaseQuantityVal;
-
-        // 單重
-        const singleWeight = finalWeightVal / purchaseQuantityVal;
-        $('result_single_weight').innerText = `單重：${singleWeight.toFixed(2)} Kg`;
-
-        // 顯示總重
-        $('result_total_weight').innerText = `總重：${finalWeightVal.toFixed(2)} Kg`;
-
-        $('result_single_cost').innerText = `單成：${singleCost.toFixed(2)} 元`;
-        $('result_total_cost').innerText = `總成：${totalCost.toFixed(2)} 元`;
-      }
+      $('result_single_cost').innerText = `單成：${singleCost.toFixed(2)} 元`;
+      $('result_total_cost').innerText = `總成：${totalCost.toFixed(2)} 元`;
 
       // 通用計算：抽成 + 利潤
       const commissionRate = pCommission / 100,
@@ -601,7 +623,13 @@
         return null;
       }
       if (valNum < minVal) {
-        if (errSpan) errSpan.innerText = `不可小於 ${minVal}`;
+        if (errSpan) {
+          if (id === 'material_count') {
+            errSpan.innerText = '基礎為6材，請輸入正確材數';
+          } else {
+            errSpan.innerText = `不可小於 ${minVal}`;
+          }
+        }
         return null;
       }
       return valNum;
