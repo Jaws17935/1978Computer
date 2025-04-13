@@ -217,7 +217,7 @@
     }
 
     .weight-mode-select,
-    .price-unit-select {
+    .price-currency-select {
       left: 1px;
       top: 1px;
       bottom: 1px;
@@ -226,7 +226,7 @@
     }
 
     .weight-unit-select,
-    .price-currency-select {
+    .price-unit-select {
       right: 1px;
       top: 1px;
       bottom: 1px;
@@ -265,14 +265,14 @@
         <div id="section_unknown">
           <!-- 單價 / 總價 -->
           <div class="price-input-group">
-            <select id="price_unit" class="price-unit-select">
-              <option value="unit" selected>單價</option>
-              <option value="total">總價</option>
-            </select>
-            <input type="text" id="product_price" value="">
             <select id="price_currency" class="price-currency-select">
               <option value="CNY" selected>CNY</option>
               <option value="NTD">NTD</option>
+            </select>
+            <input type="text" id="product_price" value="">
+            <select id="price_unit" class="price-unit-select">
+              <option value="unit" selected>單價</option>
+              <option value="total">總價</option>
             </select>
           </div>
           <span id="price_mode_error" class="error-message"></span>
