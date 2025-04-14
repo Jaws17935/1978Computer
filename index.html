@@ -2,8 +2,8 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>損益計算機</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>計算機</title>
   <style>
     body {
       margin: 0;
@@ -243,14 +243,93 @@
       text-align: center;
     }
 
-    /* 新增：超材相關樣式 */
-    #material_count {
-      margin-top: 6px;
+    /* 修改：材積相關樣式 */
+    .material-input-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 85%;
+      max-width: 250px;
+      margin: 6px auto;
+      position: relative;
+      height: 32px;
     }
 
-    #material_count_error,
-    #material_count_formula_error {
-      margin-top: 2px;
+    .material-label {
+      position: absolute;
+      padding: 0;
+      background: rgba(0, 255, 204, 0.1);
+      border: none;
+      color: #ffffff;
+      font-size: 0.85em;
+      text-align: center;
+      box-sizing: border-box;
+      cursor: pointer;
+      min-width: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 30px;
+      line-height: 30px;
+    }
+
+    .material-label:first-child {
+      left: 1px;
+      top: 1px;
+      bottom: 1px;
+      border-right: 0.5px solid #00ffcc;
+      border-radius: 5px 0 0 5px;
+    }
+
+    .material-label:last-child {
+      right: 1px;
+      top: 1px;
+      bottom: 1px;
+      border-left: 0.5px solid #00ffcc;
+      border-radius: 0 5px 5px 0;
+    }
+
+    #material_count {
+      width: 100%;
+      padding: 0 60px;
+      background: rgba(0, 255, 204, 0.1);
+      border: 0.5px solid #00ffcc;
+      border-radius: 5px;
+      color: #ffffff;
+      font-size: 0.85em;
+      text-align: center;
+      box-sizing: border-box;
+      line-height: 30px;
+      height: 30px;
+    }
+
+    #material_count:focus {
+      outline: none;
+      box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+    }
+
+    .material-normal {
+      color: #ffffff;
+      background: rgba(0, 255, 204, 0.1);
+    }
+
+    .material-normal.active {
+      color: #00ffcc;
+      text-shadow: 0 0 5px rgba(0, 255, 204, 0.5);
+    }
+
+    .material-extra {
+      color: #ffffff;
+      background: rgba(0, 255, 204, 0.1);
+    }
+
+    .material-extra.active {
+      color: #ff3366;
+      text-shadow: 0 0 5px rgba(255, 51, 102, 0.5);
+    }
+
+    .material-input-group:hover {
+      box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
     }
   </style>
 </head>
@@ -259,7 +338,7 @@
   <div class="dashboard">
     <div class="card">
       <div class="input-section">
-        <h1>損益計算機</h1>
+        <h1>計算機</h1>
 
         <!-- 未知成本 (N) -->
         <div id="section_unknown">
@@ -310,12 +389,11 @@
           <span id="weight_value_formula_error" class="formula-error"></span>
 
           <!-- 修改：商品材數選項 -->
-          <div class="radio-group">
-            <label><input type="radio" name="material_mode" id="material_mode_normal" value="normal" checked tabindex="0"> 無計材</label>
-            <label><input type="radio" name="material_mode" id="material_mode_extra" value="extra" tabindex="0"> 需計材</label>
+          <div class="material-input-group">
+            <span class="material-label material-normal">無材</span>
+            <input type="text" id="material_count" value="">
+            <span class="material-label material-extra">計材</span>
           </div>
-          <span id="material_mode_error" class="error-message"></span>
-          <input type="text" id="material_count" value="" disabled>
           <span id="material_count_error" class="error-message"></span>
           <span id="material_count_formula_error" class="formula-error"></span>
 
@@ -440,16 +518,11 @@
         $('shipping_included_no'),
         weightModeSelect,
         weightUnitSelect,
-        $('material_mode_normal'),
-        $('material_mode_extra')
+        $('material_count')
       ].forEach(el =>
         el.addEventListener('change', () => {
           if (el === shippingIncludedYes || el === $('shipping_included_no')) {
             handleShippingMode();
-          } else if (el === $('material_mode_normal') || el === $('material_mode_extra')) {
-            handleMaterialMode();
-          } else if (el === priceCurrencySelect) {
-            handleCurrencyMode();
           } else {
             calculate();
           }
@@ -457,13 +530,20 @@
       );
 
       handleShippingMode();
-      handleMaterialMode();
-      handleCurrencyMode();
       calculate();
       attachEnterKeyListeners();
       
       // 聚焦到第一個輸入框（商品價格）
       $('product_price').focus();
+
+      // 添加材積輸入監聽
+      $('material_count').addEventListener('input', () => {
+        handleMaterialInput();
+        calculate();
+      });
+
+      // 初始設置
+      handleMaterialInput();
     });
 
     // 依是否需郵費切換內地運費欄位
@@ -480,81 +560,6 @@
       calculate();
     };
 
-    // 依材數模式切換材數輸入框
-    const handleMaterialMode = () => {
-      const materialCountField = $('material_count');
-      if ($('material_mode_extra').checked) {
-        materialCountField.style.display = 'block';
-        materialCountField.disabled = false;
-        materialCountField.value = ''; // 預設值設為空
-      } else {
-        materialCountField.style.display = 'none';
-        materialCountField.value = '6';
-        materialCountField.disabled = true;
-      }
-      calculate();
-      attachEnterKeyListeners(); // 重新綁定事件
-    };
-
-    // 依幣別切換顯示欄位
-    const handleCurrencyMode = () => {
-      const elementsToToggle = [
-        $('inland_shipping'),
-        $('material_mode_normal'),
-        $('material_mode_extra'),
-        $('material_count'),
-        $('weight_mode'),
-        $('weight_value'),
-        $('weight_unit'),
-        $('exchange_rate'),
-        $('international_shipping')
-      ];
-
-      const labelsToToggle = [
-        document.querySelector('label[for="inland_shipping"]'),
-        document.querySelector('label[for="material_count"]'),
-        document.querySelector('label[for="weight_value"]'),
-        document.querySelector('label[for="exchange_rate"]'),
-        document.querySelector('label[for="international_shipping"]')
-      ];
-
-      const radioGroupsToToggle = [
-        document.querySelector('.radio-group:has(#material_mode_normal)'),
-        document.querySelector('.radio-group:has(#shipping_included_yes)')
-      ];
-
-      if (priceCurrencySelect.value === 'NTD') {
-        elementsToToggle.forEach(el => {
-          if (el) {
-            el.style.display = 'none';
-            el.disabled = true;
-          }
-        });
-        labelsToToggle.forEach(label => {
-          if (label) label.style.display = 'none';
-        });
-        radioGroupsToToggle.forEach(group => {
-          if (group) group.style.display = 'none';
-        });
-      } else {
-        elementsToToggle.forEach(el => {
-          if (el) {
-            el.style.display = 'block';
-            el.disabled = false;
-          }
-        });
-        labelsToToggle.forEach(label => {
-          if (label) label.style.display = 'block';
-        });
-        radioGroupsToToggle.forEach(group => {
-          if (group) group.style.display = 'flex';
-        });
-        handleShippingMode();
-        handleMaterialMode();
-      }
-      calculate();
-    };
-
     // 動態建立跳欄順序
     const getFlowOrder = () => {
       let flow = [
@@ -562,20 +567,16 @@
         $('purchase_quantity')
       ];
 
-      // 根據幣別決定是否加入郵費和材數選項
+      // 根據幣別決定是否加入郵費選項
       if (priceCurrencySelect.value === 'CNY') {
         // 加入郵費選項
         if (shippingIncludedYes.checked) {
           flow.push(inlandShippingField);
         }
 
-        // 加入材數選項
-        if ($('material_mode_extra').checked) {
-          flow.push($('material_count'));
-        }
-
         flow.push(
           $('weight_value'),
+          $('material_count'),
           $('exchange_rate'),
           $('international_shipping')
         );
@@ -721,8 +722,7 @@
       const internationalShippingVal = getValidFloat('international_shipping', 0, false) || 0;
       const inlandShippingVal = shippingIncludedYes.checked ? (getValidFloat('inland_shipping', 0, false) || 0) : 0;
       const rawWeightVal = getValidFloat('weight_value', 0, false) || 0;
-      const materialCountVal = $('material_mode_extra').checked ? 
-        (getValidFloat('material_count', 6, false) || 6) : 6;
+      const materialCountVal = getValidFloat('material_count', 0, false) || 0;
       pCommission = getValidFloat('platform_commission_rate_n', 0, false) || 0;
       pProfit = getValidFloat('profit_margin_rate_n', 0, false) || 0;
 
@@ -748,12 +748,14 @@
 
         // 計算材數額外運費
         let extraShippingFee = 0;
-        if ($('material_mode_extra').checked && materialCountVal > 6) {
-          extraShippingFee = Math.floor(materialCountVal - 6) * 25;
-          $('result_extra_material_fee').innerText = `計材：${extraShippingFee.toFixed(2)} 元`;
+        let materialStatus = '';
+        if (materialCountVal > 6) {
+          extraShippingFee = (materialCountVal - 6) * 25;
+          materialStatus = `計材：${extraShippingFee.toFixed(2)} 元`;
         } else {
-          $('result_extra_material_fee').innerText = '';
+          materialStatus = '';
         }
+        $('result_extra_material_fee').innerText = materialStatus;
 
         // 國際運費：finalWeightVal (kg) * internationalShippingVal (單位：NT$/kg) + 超材運費
         const internationalShippingTotal = (finalWeightVal * internationalShippingVal) + extraShippingFee;
@@ -796,6 +798,21 @@
       $('suggested_profit_loss').innerText = finalProfit.toFixed(2) + ' 元';
 
       resultArea.style.display = 'block';
+    };
+
+    // 修改：處理材積輸入事件
+    const handleMaterialInput = () => {
+      const materialCount = parseFloat($('material_count').value) || 6;
+      const normalLabel = document.querySelector('.material-normal');
+      const extraLabel = document.querySelector('.material-extra');
+
+      if (materialCount <= 6) {
+        normalLabel.classList.add('active');
+        extraLabel.classList.remove('active');
+      } else {
+        normalLabel.classList.remove('active');
+        extraLabel.classList.add('active');
+      }
     };
   </script>
 </body>
