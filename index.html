@@ -330,7 +330,7 @@
           <span id="international_shipping_formula_error" class="formula-error"></span>
           
           <label for="platform_commission_rate_n">平台抽成</label>
-          <input type="text" id="platform_commission_rate_n" value="16.5">
+          <input type="text" id="platform_commission_rate_n" value="23.5">
           <span id="platform_commission_rate_n_error" class="error-message"></span>
           <span id="platform_commission_rate_n_formula_error" class="formula-error"></span>
           
@@ -462,8 +462,8 @@
       calculate();
       attachEnterKeyListeners();
       
-      // 聚焦到最後一個輸入框
-      $('profit_margin_rate_n').focus();
+      // 聚焦到第一個輸入框（商品價格）
+      $('product_price').focus();
     });
 
     // 依是否需郵費切換內地運費欄位
@@ -611,6 +611,17 @@
             if (value.length > 1 && value[0] === '0' && /^[1-9]/.test(value[1])) {
               e.target.value = value.substring(1);
             }
+            // 計算數學表達式
+            const formula = value.trim();
+            if (formula) {
+              const result = evaluateFormula(formula);
+              if (!isNaN(result)) {
+                e.target.value = result;
+                if ($(elem.id + '_formula_error')) $(elem.id + '_formula_error').innerText = '';
+              } else {
+                if ($(elem.id + '_formula_error')) $(elem.id + '_formula_error').innerText = '請輸入正確數值';
+              }
+            }
             calculate();
           });
 
@@ -642,37 +653,45 @@
           };
           elem.addEventListener('keydown', elem._keydownHandler);
 
+          // 新增：處理點擊事件
+          elem.addEventListener('click', e => {
+            // 將游標移到最後
+            const len = e.target.value.length;
+            e.target.setSelectionRange(len, len);
+          });
+
           // 新增：處理聚焦事件
           elem.addEventListener('focus', e => {
             // 將游標移到最後
             const len = e.target.value.length;
             e.target.setSelectionRange(len, len);
           });
-        }
 
-        elem.onkeydown = event => {
-          if (event.key === 'Enter') {
-            event.preventDefault();
-            if (elem.type === 'text') {
-              const formula = elem.value.trim();
-              if (!formula) {
-                elem.value = '';
-                if ($(elem.id + '_formula_error')) $(elem.id + '_formula_error').innerText = '';
-              } else {
-                const result = evaluateFormula(formula);
-                if (!isNaN(result)) {
-                  elem.value = result;
+          // 修改：處理 Enter 鍵事件
+          elem.onkeydown = event => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              if (elem.type === 'text') {
+                const formula = elem.value.trim();
+                if (!formula) {
+                  elem.value = '';
                   if ($(elem.id + '_formula_error')) $(elem.id + '_formula_error').innerText = '';
                 } else {
-                  if ($(elem.id + '_formula_error')) $(elem.id + '_formula_error').innerText = '請輸入正確數值';
+                  const result = evaluateFormula(formula);
+                  if (!isNaN(result)) {
+                    elem.value = result;
+                    if ($(elem.id + '_formula_error')) $(elem.id + '_formula_error').innerText = '';
+                  } else {
+                    if ($(elem.id + '_formula_error')) $(elem.id + '_formula_error').innerText = '請輸入正確數值';
+                  }
                 }
               }
+              calculate();
+              const nextIndex = (index + 1) % flowOrder.length;
+              flowOrder[nextIndex].focus();
             }
-            calculate();
-            const nextIndex = (index + 1) % flowOrder.length;
-            flowOrder[nextIndex].focus();
-          }
-        };
+          };
+        }
       });
     };
 
