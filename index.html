@@ -451,8 +451,13 @@
      * - 非法或失敗則回傳 NaN
      */
     const evaluateFormula = str => {
+      if (!str) return 0;
       if (!/^[0-9+\-*/().\s]+$/.test(str)) {
         return NaN;
+      }
+      // 檢查是否以運算符號結尾，如果是則移除最後的運算符號
+      if (/[+\-*/]$/.test(str)) {
+        str = str.slice(0, -1);
       }
       try {
         return Function('"use strict"; return (' + str + ');')();
@@ -690,6 +695,12 @@
               calculate();
               const nextIndex = (index + 1) % flowOrder.length;
               flowOrder[nextIndex].focus();
+            } else if (event.key === 'Backspace' || event.key === 'Delete') {
+              if (elem.type === 'text') {
+                elem.value = '';
+                if ($(elem.id + '_formula_error')) $(elem.id + '_formula_error').innerText = '';
+                calculate();
+              }
             }
           };
         }
